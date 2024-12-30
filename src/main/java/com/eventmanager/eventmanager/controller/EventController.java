@@ -26,31 +26,30 @@ public class EventController {
         return ResponseEntity.ok(createdEvent);
     }
 
-    // Update an Event
-    @PutMapping("/{id}")
-    @Operation(summary = "Update event", description = "Update event on the system")
-    public ResponseEntity<Event> updateEvent(@PathVariable Long id, @RequestBody EventDTO eventDTO) {
-        return eventService.updateEvent(id, eventDTO)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    // Get all Events
     @GetMapping
+    @Operation(summary = "Get all events", description = "Fetches all events in the system")
     public ResponseEntity<List<Event>> getAllEvents() {
         return ResponseEntity.ok(eventService.getAllEvents());
     }
 
-    // Get Event by ID
     @GetMapping("/{id}")
+    @Operation(summary = "Get an event by ID", description = "Fetches an event by its unique ID")
     public ResponseEntity<Event> getEventById(@PathVariable Long id) {
         return eventService.getEventById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // Delete an Event
+    @PutMapping("/{id}")
+    @Operation(summary = "Update an event", description = "Updates an event by its unique ID")
+    public ResponseEntity<Event> updateEvent(@PathVariable Long id, @RequestBody EventDTO eventDTO) {
+        return eventService.updateEvent(id, eventDTO)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete an event", description = "Deletes an event by its unique ID")
     public ResponseEntity<Void> deleteEvent(@PathVariable Long id) {
         if (eventService.deleteEvent(id)) {
             return ResponseEntity.noContent().build();

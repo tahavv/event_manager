@@ -1,5 +1,6 @@
 package com.eventmanager.eventmanager.services;
 
+import com.eventmanager.eventmanager.dto.RoomDTO;
 import com.eventmanager.eventmanager.model.Room;
 import com.eventmanager.eventmanager.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +16,13 @@ public class RoomService {
     private RoomRepository roomRepository;
 
     // Create a Room
-    public Room createRoom(Room room) {
+    public Room createRoom(RoomDTO roomDTO) {
+        Room room = new Room();
+        room.setName(roomDTO.getName());
+        room.setCapacity(roomDTO.getCapacity());
         return roomRepository.save(room);
     }
+
 
     // Get all Rooms
     public List<Room> getAllRooms() {
@@ -30,10 +35,14 @@ public class RoomService {
     }
 
     // Update a Room
-    public Optional<Room> updateRoom(Long id, Room roomDetails) {
+    public Optional<Room> updateRoom(Long id, RoomDTO roomDTO) {
         return roomRepository.findById(id).map(room -> {
-            room.setName(roomDetails.getName());
-            room.setCapacity(roomDetails.getCapacity());
+            if (roomDTO.getName() != null) {
+                room.setName(roomDTO.getName());
+            }
+            if (roomDTO.getCapacity() > 0) {
+                room.setCapacity(roomDTO.getCapacity());
+            }
             return roomRepository.save(room);
         });
     }
