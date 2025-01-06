@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,8 +20,9 @@ public class EventController {
     @Autowired
     private EventService eventService;
 
-    @PostMapping
+    @PostMapping("/add")
     @Operation(summary = "Create a new event", description = "Adds a new event to the system")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<Event> createEvent(@RequestBody EventDTO eventDTO) {
         Event createdEvent = eventService.createEvent(eventDTO);
         return ResponseEntity.ok(createdEvent);
@@ -42,6 +44,7 @@ public class EventController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Update an event", description = "Updates an event by its unique ID")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<Event> updateEvent(@PathVariable Long id, @RequestBody EventDTO eventDTO) {
         return eventService.updateEvent(id, eventDTO)
                 .map(ResponseEntity::ok)
@@ -50,6 +53,7 @@ public class EventController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete an event", description = "Deletes an event by its unique ID")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteEvent(@PathVariable Long id) {
         if (eventService.deleteEvent(id)) {
             return ResponseEntity.noContent().build();

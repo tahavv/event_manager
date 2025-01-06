@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class RoomController {
 
     @PostMapping
     @Operation(summary = "Create a new room", description = "Adds a new room to the system")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<Room> createRoom(@RequestBody RoomDTO roomDTO) {
         Room createdRoom = roomService.createRoom(roomDTO);
         return ResponseEntity.ok(createdRoom);
@@ -42,6 +44,7 @@ public class RoomController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Update a room", description = "Updates a room by its unique ID")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<Room> updateRoom(@PathVariable Long id, @RequestBody RoomDTO roomDTO) {
         return roomService.updateRoom(id, roomDTO)
                 .map(ResponseEntity::ok)
@@ -50,6 +53,7 @@ public class RoomController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a room", description = "Deletes a room by its unique ID")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteRoom(@PathVariable Long id) {
         if (roomService.deleteRoom(id)) {
             return ResponseEntity.noContent().build();
