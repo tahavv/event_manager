@@ -26,12 +26,22 @@ public class EventService {
 
     // Create an Event
     public Event createEvent(EventDTO eventDTO) {
-        Event event = new Event();
+        // 1. Basic checks
         User organizer = userRepository.findById(eventDTO.getOrganizerId())
                 .orElseThrow(() -> new IllegalArgumentException("Organizer not found"));
         Room room = roomRepository.findById(eventDTO.getRoomId())
                 .orElseThrow(() -> new IllegalArgumentException("Room not found"));
-
+        // 2. Overlap check
+        List<Event> conflictingEvents = eventRepository.findOverlappingEvents(
+                room.getId(),
+                eventDTO.getDateDebut(),
+                eventDTO.getDateFin()
+        );
+        if (!conflictingEvents.isEmpty()) {
+            throw new IllegalArgumentException("Room is not available in the selected time range");
+        }
+        // 3. Create the event
+        Event event = new Event();
         event.setName(eventDTO.getName());
         event.setDescription(eventDTO.getDescription());
         event.setCategory(eventDTO.getCategory());
@@ -44,9 +54,30 @@ public class EventService {
         return eventRepository.save(event);
     }
 
+
     // Update an Event
     public Optional<Event> updateEvent(Long id, EventDTO eventDTO) {
         return eventRepository.findById(id).map(event -> {
+            // Overlap check if the room or the date range changed
+            if (!eventDTO.getRoomId().equals(event.getRoom().getId())
+                    || !eventDTO.getDateDebut().equals(event.getDateDebut())
+                    || !eventDTO.getDateFin().equals(event.getDateFin())) {
+                List<Event> conflicts = eventRepository.findOverlappingEvents(
+                        eventDTO.getRoomId(),
+                        eventDTO.getDateDebut(),
+                        eventDTO.getDateFin()
+                );
+                // Remove the current event from conflicts if needed
+                conflicts.remove(event);
+                if (!conflicts.isEmpty()) {
+                    throw new IllegalArgumentException("Room not available for updated time range");
+                }
+                // Now update the room reference
+                Room newRoom = roomRepository.findById(eventDTO.getRoomId())
+                        .orElseThrow(() -> new IllegalArgumentException("Room not found"));
+                event.setRoom(newRoom);
+            }
+            // Update the rest
             event.setName(eventDTO.getName());
             event.setDescription(eventDTO.getDescription());
             event.setCategory(eventDTO.getCategory());
@@ -56,7 +87,6 @@ public class EventService {
             return eventRepository.save(event);
         });
     }
-
     // Get all Events
     public List<Event> getAllEvents() {
         return eventRepository.findAll();

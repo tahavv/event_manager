@@ -16,6 +16,4 @@ public class EventDTO {
     private String location;
     private Long organizerId;
     private Long roomId;
-
-
 }

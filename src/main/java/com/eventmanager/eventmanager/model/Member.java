@@ -16,9 +16,8 @@ import java.util.List;
 @Entity
 @DiscriminatorValue("MEMBER")
 public class Member extends User {
-    @Enumerated(EnumType.STRING)
-    private Status status;
 
+    // If we want to store a separate many-to-many "member_events" table, define references carefully.
     @ManyToMany
     @JoinTable(
             name = "member_events",
@@ -27,3 +26,4 @@ public class Member extends User {
     )
     private List<Event> eventList;
 }
+

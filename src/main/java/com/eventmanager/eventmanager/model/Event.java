@@ -8,10 +8,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
+@Data
 @Entity
 @Table(name = "events")
 public class Event {
@@ -22,7 +19,6 @@ public class Event {
     @Column(nullable = false)
     private String name;
 
-    @Column
     private String description;
 
     @Enumerated(EnumType.STRING)
@@ -39,7 +35,7 @@ public class Event {
 
     @ManyToOne
     @JoinColumn(name = "organizer_id", nullable = false)
-    @JsonBackReference
+    @JsonBackReference(value = "user-organized-events")
     private User organizer;
 
     @ManyToMany
@@ -48,91 +44,11 @@ public class Event {
             joinColumns = @JoinColumn(name = "event_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-    @JsonManagedReference
-    private List<User> participants;
+    @JsonManagedReference(value = "event-participants")
+    private List<Member> participants;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "room_id")
-    @JsonManagedReference
+    @JsonManagedReference(value = "room-events")
     private Room room;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Category getCategory() {
-        return category;
-    }
-
-    public void setCategory(Category category) {
-        this.category = category;
-    }
-
-    public LocalDateTime getDateDebut() {
-        return dateDebut;
-    }
-
-    public void setDateDebut(LocalDateTime dateDebut) {
-        this.dateDebut = dateDebut;
-    }
-
-    public LocalDateTime getDateFin() {
-        return dateFin;
-    }
-
-    public void setDateFin(LocalDateTime dateFin) {
-        this.dateFin = dateFin;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public User getOrganizer() {
-        return organizer;
-    }
-
-    public void setOrganizer(User organizer) {
-        this.organizer = organizer;
-    }
-
-    public List<User> getParticipants() {
-        return participants;
-    }
-
-    public void setParticipants(List<User> participants) {
-        this.participants = participants;
-    }
-
-    public Room getRoom() {
-        return room;
-    }
-
-    public void setRoom(Room room) {
-        this.room = room;
-    }
 }

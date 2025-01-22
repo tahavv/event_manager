@@ -1,6 +1,7 @@
 package com.eventmanager.eventmanager.services;
 
 import com.eventmanager.eventmanager.dto.UserDTO;
+import com.eventmanager.eventmanager.model.Member;
 import com.eventmanager.eventmanager.model.User;
 import com.eventmanager.eventmanager.repository.UserRepository;
 import jakarta.mail.MessagingException;
@@ -24,7 +25,7 @@ public class UserService {
 
     // Create a User
     public User createUser(UserDTO userDTO)  {
-        User user = new User();
+        Member user = new Member();
         user.setName(userDTO.getName());
         user.setEmail(userDTO.getEmail());
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));

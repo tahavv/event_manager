@@ -2,15 +2,11 @@ package com.eventmanager.eventmanager.model;
 
 import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
+import java.util.List;
+
+@Data
 @Entity
 @Table(name = "rooms")
 public class Room {
@@ -24,39 +20,7 @@ public class Room {
     @Column(nullable = false)
     private int capacity;
 
-    @OneToOne(mappedBy = "room")
-    @JsonBackReference
-    private Event event;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getCapacity() {
-        return capacity;
-    }
-
-    public void setCapacity(int capacity) {
-        this.capacity = capacity;
-    }
-
-    public Event getEvent() {
-        return event;
-    }
-
-    public void setEvent(Event event) {
-        this.event = event;
-    }
+    @OneToMany(mappedBy = "room")
+    @JsonBackReference(value = "room-events")
+    private List<Event> events;
 }
